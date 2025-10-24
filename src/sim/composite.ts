@@ -1,11 +1,12 @@
 /**
  * Composite Rendering
  *
- * Handles final rendering with bloom and feathering effects
+ * Handles final rendering with bloom, feathering, and glass mask effects
  */
 
 import type { ColorRamp } from './colorramp';
 import type { FluidGrid } from './fluid2d';
+import { createGlassMask, type GlassMask } from '../render/glassMask';
 
 export interface CompositeOptions {
   bloom: {
@@ -18,8 +19,18 @@ export interface CompositeOptions {
     heightPx: number;
     targetColor: string;
   };
+  glass: {
+    enabled: boolean;
+    radius: number;
+    padding: number;
+    innerShadow: boolean;
+    edgeHighlight: boolean;
+  };
   ramp: ColorRamp;
 }
+
+// Cache glass mask instance
+let glassMask: GlassMask | null = null;
 
 /**
  * Render fluid grid to canvas with compositing effects
@@ -33,6 +44,32 @@ export function renderFluid(
 ) {
   const { width: gw, height: gh } = grid;
 
+  // Create/update glass mask if needed
+  if (options.glass.enabled) {
+    if (!glassMask) {
+      glassMask = createGlassMask(canvasWidth, canvasHeight, {
+        radius: options.glass.radius,
+        padding: options.glass.padding,
+        innerShadow: {
+          enabled: options.glass.innerShadow,
+          width: 2,
+          opacity: 0.3,
+        },
+        edgeHighlight: {
+          enabled: options.glass.edgeHighlight,
+          width: 1.5,
+          opacity: 0.15,
+        },
+        refraction: {
+          enabled: false,
+          offset: 1,
+        },
+      });
+    } else {
+      glassMask.resize(canvasWidth, canvasHeight);
+    }
+  }
+
   // Create temporary canvas for layer rendering
   const tempCanvas = document.createElement('canvas');
   tempCanvas.width = canvasWidth;
@@ -40,7 +77,7 @@ export function renderFluid(
   const tempCtx = tempCanvas.getContext('2d')!;
 
   // Clear main canvas
-  ctx.fillStyle = '#1A1A1A'; // Dark charcoal background
+  ctx.fillStyle = '#0A1A3A'; // Deep blue background (matches color ramp start)
   ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 
   // Render Layer A (base, dark)
@@ -60,8 +97,13 @@ export function renderFluid(
   ctx.globalAlpha = 1.0;
   ctx.drawImage(tempCanvas, 0, 0);
 
-  // Apply feathering at bottom
-  if (options.feather.enabled) {
+  // Apply glass mask
+  if (options.glass.enabled && glassMask) {
+    glassMask.apply(ctx);
+  }
+
+  // Apply feathering at bottom (only if not using glass)
+  if (options.feather.enabled && !options.glass.enabled) {
     applyFeather(ctx, canvasWidth, canvasHeight, options.feather.heightPx, options.feather.targetColor);
   }
 

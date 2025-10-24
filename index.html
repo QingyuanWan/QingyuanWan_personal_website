@@ -8,8 +8,68 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+
+    <!-- Critical CSS: First-paint styling (prevents white flash) -->
+    <style>
+      html, body {
+        margin: 0;
+        padding: 0;
+        background: #E8E6E0;
+        height: 100%;
+        overflow-x: hidden;
+      }
+
+      #preloader-overlay {
+        position: fixed;
+        inset: 0;
+        background: #E8E6E0;
+        color: #1A1A1A;
+        display: grid;
+        place-items: center;
+        z-index: 999999;
+        opacity: 1;
+        transition: opacity 300ms ease;
+      }
+
+      #preloader-overlay.fade-out {
+        opacity: 0;
+      }
+
+      .preloader-ring {
+        width: 48px;
+        height: 48px;
+        border: 3px solid rgba(168, 85, 247, 0.2);
+        border-top-color: #A855F7;
+        border-radius: 50%;
+        animation: preloader-spin 1s linear infinite;
+        margin-bottom: 16px;
+      }
+
+      @keyframes preloader-spin {
+        to { transform: rotate(360deg); }
+      }
+
+      .preloader-label {
+        font-size: 14px;
+        font-weight: 500;
+        letter-spacing: 0.05em;
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .preloader-ring {
+          animation: none;
+          border-top-color: transparent;
+        }
+      }
+    </style>
   </head>
   <body>
+    <!-- Early overlay mount (before JS loads) -->
+    <div id="preloader-overlay">
+      <div class="preloader-ring"></div>
+      <div class="preloader-label">preparing…</div>
+    </div>
+
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

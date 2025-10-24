@@ -156,6 +156,7 @@ export function createFluid(
     renderFluid(ctx, grid, {
       bloom: options.bloom,
       feather: options.feather,
+      glass: options.glass,
       ramp: options.ramp,
     }, canvas.width, canvas.height);
   }

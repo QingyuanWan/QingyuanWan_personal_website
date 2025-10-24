@@ -1,5 +1,4 @@
 import { useEffect, useRef } from 'react';
-import { getGlobalCursor } from '../cursor/globalCursor';
 import { createDotPanel } from '../utils/dotPanel.js';
 
 interface DotPanelProps {
@@ -76,24 +75,7 @@ export function DotPanel({
       return;
     }
 
-    // Get global cursor and attach section
-    const cursor = getGlobalCursor();
-    console.log('[DotPanel] Got global cursor:', cursor);
-    console.log('[DotPanel] Container element:', containerRef.current);
-
-    const detachCursor = cursor.attach({
-      id: 'dot-panel',
-      element: containerRef.current,
-      variant: {
-        size: 12,
-        color: cursorColor || '#A855F7',
-        glow: false,
-      },
-    });
-
-    console.log('[DotPanel] Attached to global cursor with ID: dot-panel');
-
-    console.log('[DotPanel] Creating panel with options:', {
+    console.log('[DotPanel] Creating panel with options (LOCAL MODE - no global cursor):', {
       backgroundColor,
       dotColor,
       cursorColor,
@@ -146,7 +128,6 @@ export function DotPanel({
         panelRef.current.destroy();
         panelRef.current = undefined;
       }
-      detachCursor();
     };
   }, []); // Empty deps - only run once on mount
 
