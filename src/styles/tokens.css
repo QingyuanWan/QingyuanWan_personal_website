@@ -1,0 +1,41 @@
+:root {
+  /* Color palette */
+  --bg: #E8E6E0;
+  --panel: #FFFFFF;
+  --blue: #5BC0F8;
+  --orange: #FF9F1C;
+  --ink: #1A1A1A;
+  --text: #1A1A1A;
+  --muted: #6B6B6B;
+  --dot: rgba(0, 0, 0, 0.12);
+  --glow-blue: rgba(91, 192, 248, 0.35);
+  --glow-orange: rgba(255, 159, 28, 0.35);
+
+  /* Typography */
+  --font-sans: 'Inter', 'Geist Sans', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+
+  /* Spacing scale */
+  --space-xs: 16px;
+  --space-sm: 24px;
+  --space-md: 40px;
+  --space-lg: 56px;
+  --space-xl: 72px;
+
+  /* Shape tokens */
+  --radius-tile: 12px;
+  --radius-pill: 28px;
+
+  /* Motion defaults */
+  --duration-normal: 0.6s;
+  --duration-slow: 0.8s;
+  --ease-out: cubic-bezier(0.165, 0.84, 0.44, 1); /* power2.out */
+  --ease-out-strong: cubic-bezier(0.215, 0.61, 0.355, 1); /* power3.out */
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-normal: 0.15s;
+    --duration-slow: 0.15s;
+  }
+}

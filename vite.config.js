@@ -1,5 +1,7 @@
 import { defineConfig } from 'vite';
+import react from '@vitejs/plugin-react';
 
 export default defineConfig({
-  base: '/QingyuanWan_personal_website/', // repo name
+  plugins: [react()],
+  base: '/QingyuanWan_personal_website/',
 });
