@@ -15,8 +15,9 @@
         margin: 0;
         padding: 0;
         background: #E8E6E0;
-        height: 100%;
+        height: auto;
         overflow-x: hidden;
+        overflow-y: auto;
       }
 
       #preloader-overlay {
@@ -26,9 +27,10 @@
         color: #1A1A1A;
         display: grid;
         place-items: center;
-        z-index: 999999;
+        z-index: 9999;
         opacity: 1;
         transition: opacity 300ms ease;
+        pointer-events: none;
       }
 
       #preloader-overlay.fade-out {

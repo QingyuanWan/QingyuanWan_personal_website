@@ -3,7 +3,6 @@ import { getGlobalCursor } from '../cursor/globalCursor';
 import { gsap } from '../utils/gsap';
 import { hero } from '../content/data';
 import { useReducedMotion } from '../hooks/useReducedMotion';
-import { ThreeHello } from './ThreeHello';
 
 const R = 140; // repel radius
 const MAX_OFFSET = 24; // max movement in pixels
@@ -140,9 +139,9 @@ export function HeroPills() {
   };
 
   const handleScrollClick = () => {
-    const portraitSection = document.getElementById('portrait');
-    if (portraitSection) {
-      portraitSection.scrollIntoView({ behavior: 'smooth' });
+    const realHumanSection = document.querySelector('.real-human-section');
+    if (realHumanSection) {
+      realHumanSection.scrollIntoView({ behavior: 'smooth' });
     }
   };
 
@@ -196,19 +195,33 @@ export function HeroPills() {
           gap: '20px',
           width: '100%',
           maxWidth: '1000px',
+          pointerEvents: 'auto', // Enable pointer events for pills interaction
         }}
       >
-        {/* HELLO - 3D Three.js text */}
+        {/* HELLO - Simple static black text, centered */}
         <div
           style={{
             width: '100%',
             display: 'flex',
-            justifyContent: 'flex-start',
-            paddingLeft: '0%',
-            marginBottom: '-40px',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: '64px',
+            marginBottom: '64px',
           }}
         >
-          <ThreeHello />
+          <h1
+            style={{
+              fontSize: 'clamp(64px, 12vw, 120px)',
+              fontWeight: 700,
+              color: '#1A1A1A',
+              margin: 0,
+              padding: 0,
+              letterSpacing: '-0.02em',
+              lineHeight: 1,
+            }}
+          >
+            HELLO
+          </h1>
         </div>
 
         {/* Line 1: nice to meet you - right aligned */}
@@ -313,7 +326,7 @@ export function HeroPills() {
         </div>
       </div>
 
-      <div className="scroll-cue" onClick={handleScrollClick}>
+      <div className="scroll-cue" onClick={handleScrollClick} style={{ pointerEvents: 'auto' }}>
         <svg
           width="24"
           height="24"
@@ -324,7 +337,7 @@ export function HeroPills() {
         >
           <polyline points="6 9 12 15 18 9"></polyline>
         </svg>
-        <span>scroll / human</span>
+        <span>scroll</span>
       </div>
     </section>
   );

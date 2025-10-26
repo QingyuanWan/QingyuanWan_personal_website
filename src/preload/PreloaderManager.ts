@@ -277,12 +277,21 @@ export class PreloaderManager {
   }
 
   private unmountOverlay(): void {
-    if (this.overlay && this.overlay.parentNode) {
-      this.overlay.parentNode.removeChild(this.overlay);
+    if (this.overlay) {
+      if (this.overlay.parentNode) {
+        this.overlay.parentNode.removeChild(this.overlay);
+        console.log('[Preloader] ✓ Overlay removed from DOM');
+      }
       this.overlay = null;
       this.ring = null;
       this.label = null;
-      console.log('[Preloader] Overlay unmounted');
+    }
+
+    // Also try to remove by ID in case reference was lost
+    const existingOverlay = document.getElementById('preloader-overlay');
+    if (existingOverlay) {
+      existingOverlay.remove();
+      console.log('[Preloader] ✓ Removed existing overlay by ID');
     }
   }
 }

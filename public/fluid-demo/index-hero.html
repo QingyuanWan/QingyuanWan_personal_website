@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="Cache-Control" content="no-cache">
+
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="mobile-web-app-capable" content="yes">
+
+        <link rel="apple-touch-icon" href="logo.png">
+        <link rel="icon" href="logo.png">
+
+        <title>WebGL Fluid Simulation</title>
+        <meta name="description" content="A WebGL fluid simulation that works in mobile browsers.">
+
+        <meta property="og:type" content="website">
+        <meta property="og:title" content="Webgl Fluid Simulation">
+        <meta property="og:description" content="A WebGL fluid simulation that works in mobile browsers.">
+        <meta property="og:url" content="https://paveldogreat.github.io/WebGL-Fluid-Simulation/">
+        <meta property="og:image" content="https://paveldogreat.github.io/WebGL-Fluid-Simulation/logo.png">
+
+        <script type="text/javascript" src="dat.gui.min.js"></script>
+        <style>
+            @font-face {
+                font-family: 'iconfont';
+                src: url('iconfont.ttf') format('truetype');
+            }
+
+            * {
+                user-select: none;
+            }
+
+            html, body {
+                overflow: hidden;
+                background-color: #000;
+            }
+
+            body {
+                margin: 0;
+                position: fixed;
+                width: 100%;
+                height: 100%;
+            }
+
+            canvas {
+                width: 100%;
+                height: 100%;
+            }
+
+            /* Hide UI panel for hero background use */
+            .dg {
+                display: none !important;
+            }
+
+            .dg .property-name {
+                overflow: visible;
+            }
+
+            .bigFont {
+                font-size: 150%;
+                color: #8C8C8C;
+            }
+
+            .cr.function.appBigFont {
+                font-size: 150%;
+                line-height: 27px;
+                color: #A5F8D3;
+                background-color: #023C40;
+            }
+
+            .cr.function.appBigFont .property-name {
+                float: none;
+            }
+
+            .cr.function.appBigFont .icon {
+                position: sticky;
+                bottom: 27px;
+            }
+
+            .icon {
+                font-family: 'iconfont';
+                font-size: 130%;
+                float: right;
+            }
+
+            .twitter:before {
+                content: 'a';
+            }
+
+            .github:before {
+                content: 'b';
+            }
+
+            .app:before {
+                content: 'c';
+            }
+
+            .discord:before {
+                content: 'd';
+            }
+
+            .promo {
+                display: none !important;
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 1;
+                overflow: auto;
+                color: lightblue;
+                background-color: rgba(0,0,0,0.4);
+                animation: promo-appear-animation 0.35s ease-out;
+            }
+
+            .promo-middle {
+                display: table-cell;
+                vertical-align: middle;
+            }
+
+            .promo-content {
+                width: 80vw;
+                height: 80vh;
+                max-width: 80vh;
+                max-height: 80vw;
+                margin: auto;
+                padding: 0;
+                font-size: 2.8vmax;
+                font-family: Futura, "Trebuchet MS", Arial, sans-serif;
+                text-align: center;
+                background-image: url("promo_back.png");
+                background-position: center;
+                background-repeat: no-repeat;
+                background-size: cover;
+                border-radius: 15px;
+                box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2), 0 6px 20px 0 rgba(0,0,0,0.19);
+            }
+
+            .promo-header {
+                height: 10%;
+                padding: 2px 16px;
+            }
+
+            .promo-close {
+                width: 10%;
+                height: 100%;
+                text-align: left;
+                float: left;
+                font-size: 1.3em;
+                /* transition: 0.2s; */
+            }
+
+            .promo-close:hover {
+                /* transform: scale(1.25); */
+                cursor: pointer;
+            }
+
+            .promo-body {
+                padding: 8px 16px 16px 16px;
+                margin: auto;
+            }
+
+            .promo-body p {
+                margin-top: 0;
+                mix-blend-mode: color-dodge;
+            }
+
+            .link {
+                width: 100%;
+                display: inline-block;
+            }
+
+            .link img {
+                width: 100%;
+            }
+
+            @keyframes promo-appear-animation {
+                0% {
+                    transform: scale(2.0);
+                    opacity: 0;
+                }
+                100% {
+                    transform: scale(1.0);
+                    opacity: 1;
+                }
+            }
+        </style>
+        <script>
+            window.ga=window.ga||function(){(ga.q=ga.q||[]).push(arguments)};ga.l=+new Date;
+            ga('create', 'UA-105392568-1', 'auto');
+            ga('send', 'pageview');
+        </script>
+        <script async src="https://www.google-analytics.com/analytics.js"></script>
+    </head>
+    <body>
+        <canvas></canvas>
+
+        <!-- Mother of God, pls forgive me -->
+        <div class="promo">
+            <div class="promo-middle">
+                <div class="promo-content">
+                    <div class="promo-header">
+                        <span class="promo-close">&times;</span>
+                    </div>
+                    <div class="promo-body">
+                        <p>Try Fluid Simulation app!</p>
+                        <div class="links-container">
+                            <a class="link" id="apple_link" target="_blank">
+                                <img class="link-img" alt="Download on the App Store" src="app_badge.png"/>
+                            </a>
+                            <a class="link" id="google_link" target="_blank">
+                                <img class="link-img" alt="Get it on Google Play" src="gp_badge.png"/>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <script src="./script.js"></script>
+
+        <!-- React parent → iframe event forwarding -->
+        <script>
+        (function() {
+          const canvas = document.querySelector('canvas');
+          if (!canvas) {
+            console.warn('[Fluid Demo] No canvas found for event forwarding');
+            return;
+          }
+
+          // Create debug dot to visualize received coordinates
+          const debugDot = document.createElement('div');
+          debugDot.style.cssText = `
+            position: fixed;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: magenta;
+            pointer-events: none;
+            z-index: 999999;
+            opacity: 0;
+            transform: translate(-50%, -50%);
+          `;
+          document.body.appendChild(debugDot);
+
+          let messageCount = 0;
+          let lastLogTime = 0;
+          let lastMoveX = -1;
+          let lastMoveY = -1;
+          let isVirtualButtonDown = false;
+
+          function dispatch(kind, x, y, inside) {
+            // Update debug dot position
+            if (inside) {
+              debugDot.style.left = x + 'px';
+              debugDot.style.top = y + 'px';
+              debugDot.style.opacity = '0.8';
+            } else {
+              debugDot.style.opacity = '0';
+            }
+
+            // Ignore real down/up events - only handle move for auto mode
+            if (kind === 'down' || kind === 'up') {
+              // Skip real click events - we auto-manage button state
+              return;
+            }
+
+            // State machine: auto-press button when entering, auto-release when leaving
+            if (kind === 'move') {
+              if (inside && !isVirtualButtonDown) {
+                // Just entered - send pointerdown first
+                isVirtualButtonDown = true;
+
+                const downEvt = new PointerEvent('pointerdown', {
+                  clientX: x,
+                  clientY: y,
+                  pointerId: 1,
+                  bubbles: true,
+                  cancelable: true,
+                  buttons: 1,
+                  pressure: 0.5
+                });
+                const mouseDownEvt = new MouseEvent('mousedown', {
+                  clientX: x,
+                  clientY: y,
+                  bubbles: true,
+                  cancelable: true,
+                  buttons: 1
+                });
+
+                canvas.dispatchEvent(downEvt);
+                canvas.dispatchEvent(mouseDownEvt);
+                document.dispatchEvent(downEvt);
+                document.dispatchEvent(mouseDownEvt);
+
+                console.log('[Fluid Demo] Auto pointerdown (entered)');
+              } else if (!inside && isVirtualButtonDown) {
+                // Just left - send pointerup
+                isVirtualButtonDown = false;
+
+                const upEvt = new PointerEvent('pointerup', {
+                  clientX: x,
+                  clientY: y,
+                  pointerId: 1,
+                  bubbles: true,
+                  cancelable: true,
+                  buttons: 0,
+                  pressure: 0
+                });
+                const mouseUpEvt = new MouseEvent('mouseup', {
+                  clientX: x,
+                  clientY: y,
+                  bubbles: true,
+                  cancelable: true,
+                  buttons: 0
+                });
+
+                canvas.dispatchEvent(upEvt);
+                canvas.dispatchEvent(mouseUpEvt);
+                document.dispatchEvent(upEvt);
+                document.dispatchEvent(mouseUpEvt);
+
+                console.log('[Fluid Demo] Auto pointerup (left)');
+                return; // Don't send move after up
+              }
+            }
+
+            // Dispatch synthetic pointer/mouse events
+            const eventType = kind === 'down' ? 'pointerdown' :
+                             kind === 'up'   ? 'pointerup'   : 'pointermove';
+
+            const pointerEvt = new PointerEvent(eventType, {
+              clientX: x,
+              clientY: y,
+              pointerId: 1,
+              bubbles: true,
+              cancelable: true,
+              buttons: isVirtualButtonDown ? 1 : 0,  // Button held while inside
+              pressure: isVirtualButtonDown ? 0.3 : 0
+            });
+
+            const mouseEventType = kind === 'down' ? 'mousedown' :
+                                  kind === 'up'   ? 'mouseup'   : 'mousemove';
+            const mouseEvt = new MouseEvent(mouseEventType, {
+              clientX: x,
+              clientY: y,
+              bubbles: true,
+              cancelable: true,
+              buttons: isVirtualButtonDown ? 1 : 0
+            });
+
+            canvas.dispatchEvent(pointerEvt);
+            canvas.dispatchEvent(mouseEvt);
+            document.dispatchEvent(pointerEvt);
+            document.dispatchEvent(mouseEvt);
+
+            lastMoveX = x;
+            lastMoveY = y;
+          }
+
+          window.addEventListener('message', (e) => {
+            // Security: only accept messages from same origin
+            if (e.origin !== window.location.origin) {
+              console.warn('[Fluid Demo] Rejected message from wrong origin:', e.origin);
+              return;
+            }
+
+            const m = e.data;
+            if (!m || !m.__fluid) return;
+
+            messageCount++;
+
+            // Log every 60 messages (once per second at 60fps)
+            const now = performance.now();
+            if (messageCount === 1 || now - lastLogTime > 1000) {
+              console.log('[Fluid Demo] Received message:', { type: m.type, x: Math.round(m.x), y: Math.round(m.y), inside: m.inside, count: messageCount });
+              lastLogTime = now;
+            }
+
+            // Parent sent coordinates relative to hero container
+            // Iframe is full-bleed, so coordinates map 1:1
+            dispatch(m.type, m.x, m.y, m.inside);
+          });
+
+          console.log('[Fluid Demo] ✓ Event forwarding receiver installed');
+          console.log('[Fluid Demo] Origin:', window.location.origin);
+          console.log('[Fluid Demo] Debug: Magenta dot will track received coordinates');
+        })();
+        </script>
+
+        <!-- Adjust fluid parameters for gentler, longer-lasting splats -->
+        <script>
+        (function() {
+          // Wait for config to be defined
+          function adjustFluidConfig() {
+            if (typeof config === 'undefined') {
+              setTimeout(adjustFluidConfig, 50);
+              return;
+            }
+
+            // Reduce initial brightness/force (was 6000)
+            config.SPLAT_FORCE = 3000;  // 50% reduction
+
+            // Slow down fade/dissipation (lower = slower fade, longer lasting)
+            config.DENSITY_DISSIPATION = 0.97;  // Was 1 (instant), now 0.97 (slow fade)
+
+            // Reduce bloom glow for less brightness
+            config.BLOOM_INTENSITY = 0.4;  // Was 0.8, now 0.4 (50% reduction)
+
+            // Optional: slightly larger splat radius for smoother appearance
+            config.SPLAT_RADIUS = 0.3;  // Was 0.25
+
+            console.log('[Fluid Demo] ✓ Config adjusted:', {
+              SPLAT_FORCE: config.SPLAT_FORCE,
+              DENSITY_DISSIPATION: config.DENSITY_DISSIPATION,
+              BLOOM_INTENSITY: config.BLOOM_INTENSITY,
+              SPLAT_RADIUS: config.SPLAT_RADIUS
+            });
+          }
+
+          adjustFluidConfig();
+        })();
+        </script>
+    </body>
+</html>

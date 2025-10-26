@@ -22,6 +22,45 @@ body {
   cursor: none !important; /* Hide cursor everywhere */
 }
 
+/* Hero section: Full viewport width for WebGL/canvas rendering */
+.hero-section {
+  position: relative;
+  width: 100vw;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Hero inner wrapper for canvas + content layering */
+.hero-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Canvas positioning (for both custom GL and iframe) */
+.hero-section canvas,
+.hero-section iframe {
+  position: absolute;
+  inset: 0;
+  display: block;
+  z-index: 1;
+  background: transparent;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  /* GPU hint */
+  will-change: transform;
+  transform: translateZ(0);
+}
+
+/* Hero content on top of canvas/iframe */
+.hero-content {
+  position: relative;
+  z-index: 2;
+}
+
 /* Flowing background animations */
 @keyframes flow {
   0%, 100% {

@@ -9,17 +9,70 @@ import { DotPanel } from './components/DotPanel';
 import { GravityHero } from './components/GravityHero';
 import { GLGravityHero } from './components/GLGravityHero';
 import { MetaballsHero } from './components/MetaballsHero';
+import { FluidHeroWrapper } from './components/FluidHeroWrapper';
+import { FluidHeroIframe } from './components/FluidHeroIframe';
+import { RealHumanSection } from './components/RealHumanSection';
 import { PreloaderManager } from './preload/PreloaderManager';
 import { applyDefaultHints } from './perf/headHints';
 import { autoBelowTheFold } from './perf/visibility';
 import { isDebugMode, getVisualModeFromURL, getWarmupSteps, getDebugHUD } from './perf/debugHUD';
+import { gsap } from './utils/gsap';
 import './styles/app.css';
 
-// Visual mode: "metaballs" (default), "dot", "gravityLayers" (Canvas2D), or "glGravity" (WebGL)
-type VisualMode = 'metaballs' | 'dot' | 'gravityLayers' | 'glGravity';
+// Visual mode: "glFluid" (default), "metaballs", "dot", "gravityLayers", "glGravity"
+type VisualMode = 'glFluid' | 'metaballs' | 'dot' | 'gravityLayers' | 'glGravity';
 
 // Global flag to prevent double preloader run in StrictMode
 let hasInitialized = false;
+
+/**
+ * Setup GSAP ScrollTrigger to pin the hero section
+ * Pins the hero for one full viewport height while content stagger-animates
+ */
+function setupHeroScrollTrigger() {
+  const { ScrollTrigger } = gsap as any;
+
+  // Kill all existing ScrollTriggers (dev hot-reload guard)
+  ScrollTrigger.killAll();
+  console.log('[App] Cleared existing ScrollTriggers');
+
+  // Check for ?nopin=1 to disable pinning
+  const params = new URLSearchParams(window.location.search);
+  if (params.get('nopin') === '1') {
+    console.log('[App] ScrollTrigger pinning disabled by ?nopin=1');
+    return;
+  }
+
+  const heroSection = document.querySelector('.hero-section');
+  if (!heroSection) {
+    console.warn('[App] No .hero-section found for ScrollTrigger pinning');
+    return;
+  }
+
+  console.log('[App] Setting up ScrollTrigger for hero section');
+
+  // Create ScrollTrigger with smooth pinning
+  ScrollTrigger.create({
+    trigger: heroSection,
+    pin: true,
+    start: 'top top',
+    end: '+=100vh', // Pin for exactly 1 viewport height
+    pinSpacing: true,
+    anticipatePin: 1,
+    invalidateOnRefresh: true,
+    markers: false, // Set to true for debugging
+    onRefresh: () => {
+      // Call setCanvasSize when ScrollTrigger refreshes (e.g., on resize)
+      const hero = (window as any).__fluidHero;
+      if (hero && hero.setCanvasSize) {
+        hero.setCanvasSize('ScrollTrigger.refresh');
+        console.log('[App] ScrollTrigger refresh → triggered canvas resize');
+      }
+    },
+  });
+
+  console.log('[App] ScrollTrigger created - will pin for 100vh');
+}
 
 function App() {
   // Get debug mode and visual mode from URL params
@@ -27,8 +80,8 @@ function App() {
   const urlMode = getVisualModeFromURL(); // ?mode=dot|gravity
   const warmupSteps = getWarmupSteps(); // ?warmup=0
 
-  // Visual mode: URL param > default to 'metaballs'
-  const [visualMode, setVisualMode] = useState<VisualMode>(urlMode || 'metaballs');
+  // Visual mode: URL param > default to 'glFluid'
+  const [visualMode, setVisualMode] = useState<VisualMode>(urlMode || 'glFluid');
   const [preloaderComplete, setPreloaderComplete] = useState(false);
   const [componentsReady, setComponentsReady] = useState(false);
   const revealTimerRef = useRef<number | null>(null);
@@ -213,6 +266,30 @@ function App() {
         });
       }
 
+      // Add glFluid task (iframe-based - no complex lifecycle needed)
+      if (visualMode === 'glFluid') {
+        preloader.addTask('glFluid', {
+          allocate: async () => {
+            if (hud) hud.setPhase('allocate:glFluid');
+            console.log('[App] Loading WebGL Fluid iframe...');
+            // Just wait a moment for iframe to exist in DOM
+            await new Promise(resolve => setTimeout(resolve, 100));
+            console.log('[App] ✓ FluidHero iframe ready');
+          },
+          warmup: async (steps) => {
+            if (hud) hud.setPhase(`warmup:glFluid (${steps})`);
+            console.log(`[App] Warming up FluidHero iframe (${steps} steps)...`);
+            // Iframe handles its own rendering - just simulate warmup
+            await new Promise(resolve => setTimeout(resolve, 300));
+            console.log('[App] ✓ FluidHero iframe warmup complete');
+          },
+          start: () => {
+            if (hud) hud.setPhase('running:glFluid');
+            console.log('[App] FluidHero iframe rendering automatically');
+          },
+        });
+      }
+
       // Run preloader
       if (hud) hud.setPhase('preloading');
       await preloader.run();
@@ -225,8 +302,8 @@ function App() {
       setPreloaderComplete(true);
 
       // Start reveal guard (fallback to dot if mode doesn't render)
-      // Skip reveal guard for metaballs (stable, always works)
-      // Only use for experimental WebGL modes
+      // Skip reveal guard for glFluid and metaballs (stable modes)
+      // Only use for experimental modes
       const timeout = visualMode === 'glGravity' ? 5000 : 2000;
       if (visualMode === 'gravityLayers' || visualMode === 'glGravity') {
         console.log(`[App] Starting reveal guard with ${timeout}ms timeout for ${visualMode}`);
@@ -235,14 +312,17 @@ function App() {
           if (hud) hud.addEvent('⚠ Fallback to dot (timeout)');
           setVisualMode('dot');
         }, timeout);
-      } else if (visualMode === 'metaballs') {
-        console.log('[App] Metaballs mode - no reveal guard timeout (stable mode)');
+      } else if (visualMode === 'glFluid' || visualMode === 'metaballs') {
+        console.log(`[App] ${visualMode} mode - no reveal guard timeout (stable mode)`);
       }
 
       // Apply content-visibility to below-the-fold sections
       autoBelowTheFold();
 
-      console.log('[App] Initialization complete');
+      // Setup GSAP ScrollTrigger for hero pinning
+      setupHeroScrollTrigger();
+
+      console.log('[App] Initialization complete - FluidHero ready with debug logging');
     };
 
     init();
@@ -259,13 +339,31 @@ function App() {
   }, [debugMode, visualMode, warmupSteps]);
 
   // Debug: Log render state
-  console.log('[App] RENDER - preloaderComplete:', preloaderComplete, 'visualMode:', visualMode, 'urlMode:', urlMode);
+  if (debugMode) {
+    console.log('[App] RENDER - preloaderComplete:', preloaderComplete, 'visualMode:', visualMode, 'urlMode:', urlMode);
+  }
 
   return (
     <>
       {/* Hero section - Conditional visual mode (always mount, hide if preloader not complete) */}
       <ErrorBoundary>
-        <div style={{ opacity: preloaderComplete ? 1 : 0, pointerEvents: preloaderComplete ? 'auto' : 'none' }}>
+        {/* Using iframe approach to ensure vendor demo works */}
+        {visualMode === 'glFluid' ? (
+          <FluidHeroIframe
+            style={{ minHeight: '100vh', backgroundColor: '#E8E6E0', opacity: preloaderComplete ? 1 : 0, pointerEvents: preloaderComplete ? 'auto' : 'none' }}
+            onFirstDraw={() => {
+              console.log('[App] ✓ FluidHero iframe loaded');
+              if (revealTimerRef.current) {
+                console.log('[App] ✓ Reveal guard canceled successfully');
+                clearTimeout(revealTimerRef.current);
+                revealTimerRef.current = null;
+              }
+            }}
+          >
+            <HeroPills />
+          </FluidHeroIframe>
+        ) : (
+          <div className="hero-section" style={{ opacity: preloaderComplete ? 1 : 0, pointerEvents: preloaderComplete ? 'auto' : 'none' }}>
           {visualMode === 'metaballs' ? (
             <MetaballsHero
               style={{ minHeight: '100vh', backgroundColor: '#E8E6E0' }}
@@ -322,10 +420,11 @@ function App() {
             </GravityHero>
           )}
         </div>
+        )}
       </ErrorBoundary>
 
       <ErrorBoundary>
-        <PortraitParallax />
+        <RealHumanSection />
       </ErrorBoundary>
 
       <ErrorBoundary>
