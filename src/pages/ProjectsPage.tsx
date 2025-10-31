@@ -19,7 +19,7 @@ export function ProjectsPage() {
 
   return (
     <DotPanel
-      style={{ minHeight: '100vh' }}
+      style={{ minHeight: 'auto', paddingBottom: '4rem' }}
       backgroundColor="#030412"
       dotColor="#FF9F1C"
       cursorColor="#a824b9a2"
@@ -27,12 +27,16 @@ export function ProjectsPage() {
     >
       <section
         onMouseMove={handleMouseMove}
-        className="relative c-space section-spacing"
+        className="relative c-space"
+        style={{ paddingTop: '5rem' }}
         id="projects"
       >
-        <h2 className="text-heading">My Selected Projects</h2>
-        <div className="bg-gradient-to-r from-transparent via-neutral-700 to-transparent mt-12 h-[1px] w-full" style={{ marginBottom: '2em' }} />
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '5em' }}>
+        <h2 className="text-heading" style={{ color: '#FF9F1C' }}>My Projects</h2>
+        <div 
+          className="bg-gradient-to-r from-transparent via-neutral-700 to-transparent h-[1px] w-full" 
+          style={{ marginTop: '1.5rem', marginBottom: '2rem' }} 
+        />
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
           {myProjects.map((project) => (
             <Project key={project.id} {...project} setPreview={setPreview} />
           ))}

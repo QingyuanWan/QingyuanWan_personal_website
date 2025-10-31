@@ -40,10 +40,36 @@ const ProjectDetails = ({
         </button>
         <img src={image} alt={title} className="w-full rounded-t-2xl" />
         <div className="p-5">
-          <h5 className="mb-2 text-2xl font-bold text-white">{title}</h5>
-          <p className="mb-3 font-normal text-neutral-400">{description}</p>
+          <h5 
+            className="mb-2 text-2xl font-bold" 
+            style={{ color: '#FF9F1C', fontFamily: "'Orbitron', sans-serif" }}
+          >
+            {title}
+          </h5>
+          <p 
+            className="mb-3 font-normal" 
+            style={{ 
+              color: '#ffffff', 
+              fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+              fontSize: '15px',
+              lineHeight: '1.6'
+            }}
+          >
+            {description}
+          </p>
           {subDescription.map((subDesc, index) => (
-            <p key={index} className="mb-3 font-normal text-neutral-400">{subDesc}</p>
+            <p 
+              key={index} 
+              className="mb-3 font-normal"
+              style={{ 
+                color: '#ffffff', 
+                fontFamily: "'Inter', system-ui, -apple-system, sans-serif",
+                fontSize: '15px',
+                lineHeight: '1.6'
+              }}
+            >
+              {subDesc}
+            </p>
           ))}
           <div className="flex items-center justify-between mt-4">
             <div className="flex gap-3">
@@ -53,18 +79,24 @@ const ProjectDetails = ({
                   src={tag.path}
                   alt={tag.name}
                   className="rounded-lg size-10 hover-animation"
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                  }}
                 />
               ))}
             </div>
-            <a 
-              href={href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 font-medium cursor-pointer hover-animation"
-            >
-              View Project
-              <img src="assets/arrow-up.svg" className="size-4" alt="arrow" />
-            </a>
+            {href && (
+              <a 
+                href={href}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 font-medium cursor-pointer hover-animation"
+                style={{ color: '#FF9F1C', fontFamily: "'Orbitron', sans-serif" }}
+              >
+                View Project
+                <img src="assets/arrow-up.svg" className="size-4" alt="arrow" />
+              </a>
+            )}
           </div>
         </div>
       </motion.div>

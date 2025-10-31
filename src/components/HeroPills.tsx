@@ -155,7 +155,7 @@ export function HeroPills() {
   const helloTokens = hero.helloLetters.map((letter, i) => ({
     text: letter,
     type: 'letter' as const,
-    color: 'blue' as const,
+    color: 'orange' as const,
     shape: (i % 2 === 0 ? 'square' : 'round') as 'square' | 'round',
   }));
 
@@ -165,7 +165,7 @@ export function HeroPills() {
     return words.map((word, wordIndex) => ({
       text: word,
       type: 'pill' as const,
-      color: (wordIndex % 2 === 0 ? 'orange' : 'blue') as 'orange' | 'blue',
+      color: (wordIndex % 2 === 0 ? 'orange' : 'orange') as 'orange' | 'orange',
     }));
   });
 
@@ -242,7 +242,7 @@ export function HeroPills() {
               <span
                 key={`line1-${i}`}
                 ref={addTileRef}
-                className={`tile hero-token ${token.type} ${isSpecialWord ? '' : 'blue'}`}
+                className={`tile hero-token ${token.type} ${isSpecialWord ? '' : 'orange'}`}
                 style={isSpecialWord ? {
                   background: '#1A1A1A',
                   color: '#FFFFFF',
@@ -273,7 +273,7 @@ export function HeroPills() {
               <span
                 key={`line2-${i}`}
                 ref={addTileRef}
-                className={`tile hero-token ${token.type} ${isSpecialWord ? '' : 'blue'}`}
+                className={`tile hero-token ${token.type} ${isSpecialWord ? '' : 'orange'}`}
                 style={isSpecialWord ? {
                   background: '#1A1A1A',
                   color: '#FFFFFF',
@@ -316,7 +316,7 @@ export function HeroPills() {
               <span
                 key={`line3-${i}`}
                 ref={addTileRef}
-                className={`tile hero-token ${token.type} ${isSpecialWord ? '' : 'blue'}`}
+                className={`tile hero-token ${token.type} ${isSpecialWord ? '' : 'orange'}`}
                 style={customStyle}
               >
                 {token.text}

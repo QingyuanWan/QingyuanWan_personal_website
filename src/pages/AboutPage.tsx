@@ -23,7 +23,7 @@ const AboutPage = () => {
       
       {/* Content with higher z-index  */}
       <div className="relative z-10">
-      <h2 className="text-heading" style={{ marginBottom: '24px' }}>About Me</h2>
+<h2 className="text-heading" style={{ marginBottom: '24px', color: '#FF9F1C' }}>About Me</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-6 md:auto-rows-[18rem] mt-12">
           {/* Grid 1 */}
           <div className="flex items-end grid-default-color grid-1">
@@ -34,10 +34,10 @@ const AboutPage = () => {
             />
             <div className="z-10">
               <p className="headtext">Hi, I'm Qingyuan Wan</p>
-              <p className="subtext">
-                Over the last 4 years, I developed my frontend and backend dev
-                skills to deliver dynamic and software and web applications.
-              </p>
+<p className="subtext" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}>
+  Currently pursuing my Master's in Computer Science at Northeastern University,
+  with 5+ years of experience in full-stack development and machine learning research in various languages.
+</p>
             </div>
             <div className="absolute inset-x-0 pointer-events-none -bottom-4 h-1/2 sm:h-1/3 bg-gradient-to-t from-indigo" />
           </div>
@@ -58,10 +58,10 @@ const AboutPage = () => {
           {/* Grid 3 */}
           <div className="grid-black-color grid-3">
             <div className="z-10 w-[50%]">
-              <p className="headtext">Time Zone</p>
-              <p className="subtext">
-                I'm based in Mars, and open to remote work worldwide
-              </p>
+              <p className="headtext">Availability Zone</p>
+              <p className="subtext" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}>
+  Flexible to relocate anywhere in the US and open to remote work worldwide
+</p>
             </div>
             <figure className="absolute left-[30%] top-[10%]">
               <Globe />
@@ -73,7 +73,7 @@ const AboutPage = () => {
             <Meteors number={60} />
             <div className="flex flex-col items-center justify-center gap-4 size-full relative z-10">
               <p className="text-center headtext">
-                Do you want to start a project together?
+                Do you want working with me?
               </p>
               <CopyEmailButton />
             </div>
@@ -83,10 +83,11 @@ const AboutPage = () => {
           <div className="grid-default-color grid-5">
             <div className="z-10 w-[50%]">
               <p className="headtext">Tech Stack</p>
-              <p className="subtext">
+
+              <p className="subtext" style={{ fontFamily: 'Inter, system-ui, -apple-system, sans-serif' }}>
                 I specialize in a variety of languages, frameworks, and tools that
                 allow me to build robust and scalable applications
-              </p>
+</p>
             </div>
             <div className="absolute inset-y-0 md:inset-y-9 w-full h-full start-[50%] md:scale-125">
               <Frameworks />

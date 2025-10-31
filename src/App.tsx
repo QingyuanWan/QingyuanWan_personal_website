@@ -352,9 +352,10 @@ function App() {
 
       <AboutPage />
 
+      <ExperiencesPage />
+
       <ProjectsPage />
 
-      <ExperiencesPage />
 
       <TestimonialPage />
 
