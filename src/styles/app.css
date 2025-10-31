@@ -1,3 +1,5 @@
+@import "tailwindcss";
+@import './information_page.css';
 @import './tokens.css';
 
 * {
@@ -9,17 +11,17 @@
 body {
   margin: 0;
   font-family: var(--font-sans);
-  background: var(--bg);
-  color: var(--text);
+  background: #030412;
+  color: white;
   line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  cursor: none; /* Hide default cursor - using custom global cursor */
+  cursor: none;
 }
 
 * {
-  cursor: none !important; /* Hide cursor everywhere */
+  cursor: none !important;
 }
 
 /* Hero section: Full viewport width for WebGL/canvas rendering */
@@ -50,7 +52,6 @@ body {
   width: 100%;
   height: 100%;
   border: 0;
-  /* GPU hint */
   will-change: transform;
   transform: translateZ(0);
 }
@@ -191,7 +192,7 @@ h3 {
   flex-direction: column;
   align-items: center;
   gap: 8px;
-  color: var(--muted);
+  color: #94a3b8;
   font-size: 14px;
   font-family: var(--font-mono);
   cursor: pointer;
@@ -225,19 +226,19 @@ h3 {
   }
 }
 
-/* Bubbles */
+/* Bubbles - using hardcoded colors instead of tokens */
 .bubble {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   padding: 10px 18px;
   border-radius: 20px;
-  background: var(--panel);
-  color: var(--text);
+  background: #0f172a;
+  color: white;
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  border: 1px solid rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   transition: all 0.2s var(--ease-out);
   white-space: nowrap;
@@ -245,18 +246,18 @@ h3 {
 
 .bubble:hover {
   background: var(--blue);
-  color: var(--panel);
+  color: white;
   border-color: var(--blue);
   box-shadow: 0 4px 16px var(--glow-blue);
   transform: translateY(-2px);
 }
 
-/* Section cards */
+/* Section cards - using hardcoded colors */
 .section-card {
-  background: var(--panel);
+  background: #0f172a;
   border-radius: var(--radius-tile);
   padding: var(--space-sm);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.08);
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
   margin-bottom: var(--space-sm);
 }
@@ -267,14 +268,14 @@ h3 {
 }
 
 .section-card .dates {
-  color: var(--muted);
+  color: #94a3b8;
   font-size: 14px;
   font-family: var(--font-mono);
   margin-bottom: 12px;
 }
 
 .section-card .org {
-  color: var(--text);
+  color: white;
   font-weight: 500;
   margin-bottom: 8px;
 }
@@ -289,7 +290,7 @@ h3 {
   position: relative;
   padding-left: 20px;
   margin-bottom: 8px;
-  color: var(--muted);
+  color: #94a3b8;
   font-size: 15px;
 }
 
@@ -317,4 +318,157 @@ h3 {
 *:focus-visible {
   outline: 2px solid var(--blue);
   outline-offset: 4px;
+}
+
+/* Meteors animation */
+@keyframes meteor {
+  0% {
+    transform: rotate(var(--angle)) translateX(0);
+    opacity: 1;
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    transform: rotate(var(--angle)) translateX(-500px);
+    opacity: 0;
+  }
+}
+
+.animate-meteor {
+  animation: meteor linear infinite;
+}
+
+@layer base {
+  .theme {
+    --animate-shimmer-slide: shimmer-slide var(--speed) ease-in-out infinite alternate;
+    --animate-spin-around: spin-around calc(var(--speed) * 2) infinite linear;
+    --animate-rippling: rippling var(--duration) ease-out;
+    --animate-ripple: ripple var(--duration,2s) ease calc(var(--i, 0)*.2s) infinite;
+    --animate-marquee: marquee var(--duration) infinite linear;
+    --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
+  }
+}
+
+/* REMOVE THIS ENTIRE BLOCK - IT'S CAUSING THE ERROR
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+*/
+
+@theme inline {
+  @keyframes shimmer-slide {
+    to {
+      transform: translate(calc(100cqw - 100%), 0);
+    }
+  }
+  @keyframes spin-around {
+    0% {
+      transform: translateZ(0) rotate(0);
+    }
+    15%, 35% {
+      transform: translateZ(0) rotate(90deg);
+    }
+    65%, 85% {
+      transform: translateZ(0) rotate(270deg);
+    }
+    100% {
+      transform: translateZ(0) rotate(360deg);
+    }
+  }
+  @keyframes rippling {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+  @keyframes ripple {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    }
+  50% {
+    transform: translate(-50%, -50%) scale(0.9);
+    }
+  }
+  @keyframes marquee {
+  from {
+    transform: translateX(0);
+    }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes marquee-vertical {
+  from {
+    transform: translateY(0);
+    }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes marquee {
+  from {
+    transform: translateX(0);
+    }
+  to {
+    transform: translateX(calc(-100% - var(--gap)));
+    }
+  }
+  @keyframes marquee-vertical {
+  from {
+    transform: translateY(0);
+    }
+  to {
+    transform: translateY(calc(-100% - var(--gap)));
+    }
+  }
+}
+
+/* Orbiting circles animations */
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes reverse-spin {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@theme inline {
+  --animate-ripple: ripple var(--duration, 2s) ease calc(var(--i, 0) * 0.2s) infinite;
+
+  @keyframes ripple {
+    0%, 100% {
+      transform: translate(-50%, -50%) scale(1);
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(0.9);
+    }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
 }

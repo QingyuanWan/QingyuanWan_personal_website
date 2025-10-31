@@ -1,0 +1,27 @@
+@layer components {
+  /* Spacing utility for navbar container */
+  .c-space {
+    @apply px-5 sm:px-10 lg:px-16;
+  }
+
+  /* Navigation list - responsive flex layout */
+  .nav-ul {
+    @apply flex flex-col items-center gap-4 sm:flex-row md:gap-6 relative z-20;
+  }
+
+  /* Navigation list items - mobile full width, hover effects */
+  .nav-li {
+    @apply text-neutral-400 hover:text-white 
+           max-sm:w-full max-sm:rounded-md 
+           py-2 max-sm:px-5 
+           transition-colors duration-300;
+  }
+
+  /* Navigation links - text sizing and hover transitions */
+  .nav-link {
+    @apply text-lg md:text-base 
+           hover:text-white 
+           transition-colors duration-300 
+           no-underline;
+  }
+}

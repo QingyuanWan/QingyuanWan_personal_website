@@ -1,17 +1,16 @@
 import { useEffect, useState, useRef } from 'react';
-import { ErrorBoundary } from './components/ErrorBoundary';
 import { getGlobalCursor } from './cursor/globalCursor';
-import { HeroPills } from './components/HeroPills';
-import { PortraitParallax } from './components/PortraitParallax';
-import { NameBubbles } from './components/NameBubbles';
-import { DotGridCanvas } from './components/DotGridCanvas';
-import { DotPanel } from './components/DotPanel';
-import { GravityHero } from './components/GravityHero';
-import { GLGravityHero } from './components/GLGravityHero';
-import { MetaballsHero } from './components/MetaballsHero';
-import { FluidHeroWrapper } from './components/FluidHeroWrapper';
-import { FluidHeroIframe } from './components/FluidHeroIframe';
-import { RealHumanSection } from './components/RealHumanSection';
+import {
+  HeroPage,
+  RealHumanPage,
+  NavbarPage,
+  AboutPage,
+  ProjectsPage,
+  ExperiencesPage,
+  TestimonialPage,
+  // EducationPage,  // Commented out - not using anymore
+  type VisualMode
+} from './pages';
 import { PreloaderManager } from './preload/PreloaderManager';
 import { applyDefaultHints } from './perf/headHints';
 import { autoBelowTheFold } from './perf/visibility';
@@ -19,15 +18,12 @@ import { isDebugMode, getVisualModeFromURL, getWarmupSteps, getDebugHUD } from '
 import { gsap } from './utils/gsap';
 import './styles/app.css';
 
-// Visual mode: "glFluid" (default), "metaballs", "dot", "gravityLayers", "glGravity"
-type VisualMode = 'glFluid' | 'metaballs' | 'dot' | 'gravityLayers' | 'glGravity';
-
 // Global flag to prevent double preloader run in StrictMode
 let hasInitialized = false;
 
 /**
  * Setup GSAP ScrollTrigger to pin the hero section
- * Pins the hero for one full viewport height while content stagger-animates
+ * Pins the hero for one full viewport height
  */
 function setupHeroScrollTrigger() {
   const { ScrollTrigger } = gsap as any;
@@ -83,7 +79,6 @@ function App() {
   // Visual mode: URL param > default to 'glFluid'
   const [visualMode, setVisualMode] = useState<VisualMode>(urlMode || 'glFluid');
   const [preloaderComplete, setPreloaderComplete] = useState(false);
-  const [componentsReady, setComponentsReady] = useState(false);
   const revealTimerRef = useRef<number | null>(null);
 
   // Initialize app with preloader
@@ -95,6 +90,7 @@ function App() {
       return;
     }
     hasInitialized = true;
+
     const init = async () => {
       console.log('[App] Initializing...', { debugMode, visualMode, warmupSteps });
 
@@ -303,7 +299,6 @@ function App() {
 
       // Start reveal guard (fallback to dot if mode doesn't render)
       // Skip reveal guard for glFluid and metaballs (stable modes)
-      // Only use for experimental modes
       const timeout = visualMode === 'glGravity' ? 5000 : 2000;
       if (visualMode === 'gravityLayers' || visualMode === 'glGravity') {
         console.log(`[App] Starting reveal guard with ${timeout}ms timeout for ${visualMode}`);
@@ -322,7 +317,7 @@ function App() {
       // Setup GSAP ScrollTrigger for hero pinning
       setupHeroScrollTrigger();
 
-      console.log('[App] Initialization complete - FluidHero ready with debug logging');
+      console.log('[App] Initialization complete');
     };
 
     init();
@@ -334,7 +329,6 @@ function App() {
         clearTimeout(revealTimerRef.current);
         revealTimerRef.current = null;
       }
-      // Note: hasInitialized stays true to prevent re-running preloader on remount
     };
   }, [debugMode, visualMode, warmupSteps]);
 
@@ -345,95 +339,26 @@ function App() {
 
   return (
     <>
-      {/* Hero section - Conditional visual mode (always mount, hide if preloader not complete) */}
-      <ErrorBoundary>
-        {/* Using iframe approach to ensure vendor demo works */}
-        {visualMode === 'glFluid' ? (
-          <FluidHeroIframe
-            style={{ minHeight: '100vh', backgroundColor: '#E8E6E0', opacity: preloaderComplete ? 1 : 0, pointerEvents: preloaderComplete ? 'auto' : 'none' }}
-            onFirstDraw={() => {
-              console.log('[App] ✓ FluidHero iframe loaded');
-              if (revealTimerRef.current) {
-                console.log('[App] ✓ Reveal guard canceled successfully');
-                clearTimeout(revealTimerRef.current);
-                revealTimerRef.current = null;
-              }
-            }}
-          >
-            <HeroPills />
-          </FluidHeroIframe>
-        ) : (
-          <div className="hero-section" style={{ opacity: preloaderComplete ? 1 : 0, pointerEvents: preloaderComplete ? 'auto' : 'none' }}>
-          {visualMode === 'metaballs' ? (
-            <MetaballsHero
-              style={{ minHeight: '100vh', backgroundColor: '#E8E6E0' }}
-              onFallback={() => {
-                console.error('[App] ❌ MetaballsHero triggered fallback - switching to dot');
-                if (revealTimerRef.current) {
-                  clearTimeout(revealTimerRef.current);
-                  revealTimerRef.current = null;
-                }
-                setVisualMode('dot');
-              }}
-              onFirstDraw={() => {
-                console.log('[App] ✓ Metaballs first draw received - canceling reveal guard');
-                if (revealTimerRef.current) {
-                  console.log('[App] ✓ Reveal guard canceled successfully');
-                  clearTimeout(revealTimerRef.current);
-                  revealTimerRef.current = null;
-                } else {
-                  console.warn('[App] ⚠️ No reveal guard timer to cancel (already fired?)');
-                }
-              }}
-            >
-              <HeroPills />
-            </MetaballsHero>
-          ) : visualMode === 'dot' ? (
-            <DotPanel
-              style={{ minHeight: '100vh' }}
-              backgroundColor="#E8E6E0"
-              dotColor="#6B6B6B"
-              cursorColor="#A855F7"
-            >
-              <HeroPills />
-            </DotPanel>
-          ) : visualMode === 'glGravity' ? (
-            <GLGravityHero
-              style={{ minHeight: '100vh', backgroundColor: '#E8E6E0' }}
-              onFallback={() => {
-                console.warn('[App] GLGravityHero failed - falling back to dot');
-                setVisualMode('dot');
-              }}
-              onFirstDraw={() => {
-                console.log('[App] GLGravity first draw - canceling reveal guard');
-                if (revealTimerRef.current) {
-                  clearTimeout(revealTimerRef.current);
-                  revealTimerRef.current = null;
-                }
-              }}
-            >
-              <HeroPills />
-            </GLGravityHero>
-          ) : (
-            <GravityHero style={{ minHeight: '100vh', backgroundColor: '#E8E6E0' }}>
-              <HeroPills />
-            </GravityHero>
-          )}
-        </div>
-        )}
-      </ErrorBoundary>
+      <NavbarPage />
 
-      <ErrorBoundary>
-        <RealHumanSection />
-      </ErrorBoundary>
+      <HeroPage
+        visualMode={visualMode}
+        preloaderComplete={preloaderComplete}
+        revealTimerRef={revealTimerRef}
+        onModeChange={setVisualMode}
+      />
 
-      <ErrorBoundary>
-        <NameBubbles />
-      </ErrorBoundary>
+      <RealHumanPage />
 
-      <ErrorBoundary>
-        <DotGridCanvas />
-      </ErrorBoundary>
+      <AboutPage />
+
+      <ProjectsPage />
+
+      <ExperiencesPage />
+
+      <TestimonialPage />
+
+      {/* <EducationPage /> */}
 
       {/* Footer */}
       <footer
