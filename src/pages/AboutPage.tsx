@@ -1,7 +1,7 @@
 import { useRef } from "react";
-import { Globe } from "../components/globe";
+import { Globe } from "../components/Globe";
 import CopyEmailButton from "../components/CopyEmailButton";
-import { Frameworks } from "../components/FrameWorks";
+import { Frameworks } from "../components/Frameworks";
 import { Meteors } from "../components/ui/meteors";
 import { RippleGithub } from "../components/ripple_github";
 
