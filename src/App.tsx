@@ -350,16 +350,19 @@ function App() {
 
       <RealHumanPage />
 
-      <AboutPage />
+      <div className="about-section">
+        <AboutPage />
+      </div>
 
       <ExperiencesPage />
 
-      <ProjectsPage />
+      <div className="projects-section">
+        <ProjectsPage />
+      </div>
 
-
-      <TestimonialPage />
-
-      {/* <EducationPage /> */}
+      <div className="testimonial-section">
+        <TestimonialPage />
+      </div>
 
       {/* Footer */}
       <footer
