@@ -21,7 +21,7 @@ const AboutPage = () => {
         }}
       />
       
-      {/* Content with higher z-index */}
+      {/* Content with higher z-index  */}
       <div className="relative z-10">
       <h2 className="text-heading" style={{ marginBottom: '24px' }}>About Me</h2>
         <div className="grid grid-cols-1 gap-4 md:grid-cols-6 md:auto-rows-[18rem] mt-12">
